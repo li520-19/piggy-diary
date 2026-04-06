@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小猪爱上班打卡日记</title>
+    <style>
+        /* 
+         * Design System: Playful Geometric 
+         * Theme: Piggy Pink (#F472B6) mixed with Memphis style
+         */
+        :root {
+            --bg-color: #FFFDF5;
+            --text-color: #1E293B;
+            --primary: #F472B6; /* Pink */
+            --primary-hover: #EC4899;
+            --accent: #8B5CF6; /* Purple */
+            --secondary: #FBBF24; /* Yellow */
+            --tertiary: #34D399; /* Green */
+            --border-color: #1E293B;
+            --white: #FFFFFF;
+            --gray-100: #F1F5F9;
+            --gray-400: #94A3B8;
+            
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            
+            --shadow-hard: 2px 2px 0px 0px var(--border-color);
+            --shadow-hard-active: 0px 0px 0px 0px var(--border-color);
+            --shadow-pop: 4px 4px 0px 0px var(--border-color);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Outfit", system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            /* Dot Grid Pattern */
+            background-image: radial-gradient(var(--gray-400) 1px, transparent 1px);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Mobile Container Constraint */
+        #app {
+            width: 100%;
+            max-width: 448px; /* max-w-md */
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* Typography */
+        h1, h2, h3, p { margin: 0; }
+        .font-bold { font-weight: 800; }
+        .font-medium { font-weight: 500; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.5rem; }
+        .text-2xl { font-size: 2rem; }
+        .text-primary { color: var(--primary); }
+        .text-muted { color: var(--gray-400); }
+
+        /* Layout Utilities */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 8px; }
+        .gap-4 { gap: 16px; }
+        .p-4 { padding: 16px; }
+        .p-6 { padding: 24px; }
+        .mt-4 { margin-top: 16px; }
+        .mt-6 { margin-top: 24px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        .w-full { width: 100%; }
+
+        /* Components: Card */
+        .card {
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hard);
+            transition: transform 0.1s;
+        }
+
+        /* Components: Button */
+        .btn {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-full);
+            padding: 12px 24px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-hard);
+            transition: all 0.1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: var(--shadow-hard-active);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--text-color);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            color: var(--text-color);
+        }
+        .btn-ghost:active {
+            transform: scale(0.95);
+            background: var(--gray-100);
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Components: Input */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .input-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-color);
+        }
+
+        input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            background: var(--white);
+            outline: none;
+            transition: box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 2px 2px 0px var(--accent);
+        }
+
+        /* Header Area */
+        header {
+            padding: 24px 16px 16px;
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .slogan {
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 800;
+            color: var(--text-color);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .slogan::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--secondary);
+            opacity: 0.4;
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        /* Stats Panel */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 4px;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        /* Date Picker Customization */
+        .date-picker-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        /* Action Area */
+        .action-area {
+            padding: 0 16px;
+        }
+
+        .manual-input-card {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--gray-100);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+        }
+
+        /* History List */
+        .history-list {
+            flex: 1;
+            padding: 0 16px 80px; /* Padding for footer */
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+
+        .tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .tag-work { background: var(--primary); color: white; }
+        .tag-rest { background: var(--gray-400); color: white; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: flex-end; /* Bottom sheet on mobile */
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 448px;
+            background: var(--white);
+            border-top: 2px solid var(--border-color);
+            border-left: 2px solid var(--border-color);
+            border-right: 2px solid var(--border-color);
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        /* Calendar Grid */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            margin-bottom: 8px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .calendar-day.empty { background: transparent; cursor: default; }
+        .calendar-day.today { border-color: var(--secondary); }
+        
+        .calendar-day.status-work { background: var(--primary); color: white; }
+        .calendar-day.status-rest { background: var(--gray-100); color: var(--gray-400); text-decoration: line-through; }
+        
+        .day-income {
+            font-size: 0.6rem;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--text-color);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Heart Animation */
+        .heart {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+            z-index: 999;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            border-top: 2px dashed var(--gray-400);
+            background: var(--bg-color);
+        }
+
+        .footer-text {
+            color: var(--gray-400);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Helper for hiding elements */
+        .hidden { display: none !important; }
+
+        /* Edit Income Modal Styles */
+        .edit-income-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1.2rem;
+            background: var(--white);
+            outline: none;
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .edit-income-input:focus {
+            border-color: var(--primary);
+            box-shadow: 2px 2px 0px var(--primary);
+        }
+
+        .edit-modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .edit-modal-buttons .btn {
+            flex: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- Header -->
+    <header>
+        <div class="slogan text-lg">今天也要元气满满地搬砖哦！🐷</div>
+        
+        <div class="date-picker-container card p-2" style="border-radius: var(--radius-full);">
+            <button class="btn btn-ghost btn-icon" id="prevMonthBtn" aria-label="上个月">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            
+            <input type="date" id="datePicker" class="text-center font-bold" style="border:none; background:transparent; font-family: inherit;">
+            
+            <button class="btn btn-ghost btn-icon" id="nextMonthBtn" aria-label="下个月">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+
+            <button class="btn btn-primary btn-icon" style="width:32px; height:32px; font-size: 0.8rem;" id="calendarModalBtn" aria-label="日历">
+                📅
+            </button>
+        </div>
+    </header>
+
+    <!-- Stats Panel -->
+    <section class="px-4 mb-4">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-value" id="statDays">0</span>
+                <span class="stat-label">天数</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="statHours">0</span>
+                <span class="stat-label">工时</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="statIncome">¥0</span>
+                <span class="stat-label">总收入</span>
+            </div>
+        </div>
+        <div class="text-center text-xs text-muted font-medium">
+            "打工人的治愈日记，每一分努力都算数 ✨"
+        </div>
+    </section>
+
+    <!-- Action Area -->
+    <section class="action-area">
+        <button class="btn btn-primary w-full text-xl py-4" id="btnQuickClockIn">
+            <span>全天上班</span>
+            <span class="text-sm opacity-80">(8h / ¥130)</span>
+        </button>
+
+        <div class="manual-input-card">
+            <div class="input-group">
+                <label class="input-label">填写上班小时数</label>
+                <div class="flex gap-2">
+                    <input type="number" id="inputHours" placeholder="例如：4.5" step="0.5" min="0">
+                    <button class="btn btn-secondary" id="btnManualClockIn">确认</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- History List -->
+    <section class="history-list mt-6">
+        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <span>📝</span> 本月记录
+        </h3>
+        <div id="historyContainer"><div class="text-center text-muted text-sm py-4">暂无打卡记录，快去努力吧！💪</div></div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-text">❤️</div>
+    </footer>
+</div>
+
+<!-- Calendar Modal -->
+<div class="modal-overlay" id="calendarModal">
+    <div class="modal-content">
+        <div class="calendar-header">
+            <button class="btn btn-ghost btn-icon" id="calPrevMonth">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <h2 class="font-bold text-xl" id="calMonthTitle">2026 年 4 月</h2>
+            <button class="btn btn-ghost btn-icon" id="calNextMonth">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        </div>
+        
+        <div class="weekdays">
+            <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+        </div>
+        
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- Days injected by JS -->
+        </div>
+
+        <div class="mt-6 flex gap-2 justify-center">
+            <button class="btn btn-secondary text-sm" id="btnClearData" style="color: #EF4444; border-color: #EF4444;">
+                🗑️ 清除当月数据
+            </button>
+            <button class="btn btn-primary text-sm" id="btnCloseCalendar">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Income Modal -->
+<div class="modal-overlay" id="editIncomeModal">
+    <div class="modal-content">
+        <h2 class="font-bold text-xl text-center" id="editDateTitle">编辑收入</h2>
+        <p class="text-center text-muted text-sm" id="editDateSubTitle"></p>
+        
+        <input type="number" id="editIncomeInput" class="edit-income-input" placeholder="输入金额" step="1" min="0">
+        
+        <div class="edit-modal-buttons">
+            <button class="btn btn-secondary" id="btnCancelEdit">取消</button>
+            <button class="btn btn-primary" id="btnSaveEdit">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <span>❤️</span>
+    <span id="toastMsg">打卡成功！</span>
+</div>
+
+<script>
+    /**
+     * Application Logic
+     */
+    const HOURLY_RATE = 130 / 8; // 16.25 RMB per hour
+    const DEFAULT_DATE = new Date('2026-04-06T00:00:00');
+    
+    // State
+    let currentDate = new Date(DEFAULT_DATE); // Currently selected date for input
+    let calendarViewDate = new Date(DEFAULT_DATE); // Currently viewed month in calendar
+    let monthlyData = {}; // { "YYYY-MM-DD": { hours: 8, income: 130, type: 'work'|'rest' } }
+    let editingDate = null; // Date being edited in edit modal
+
+    // DOM Elements
+    const els = {
+        datePicker: document.getElementById('datePicker'),
+        prevMonthBtn: document.getElementById('prevMonthBtn'),
+        nextMonthBtn: document.getElementById('nextMonthBtn'),
+        statDays: document.getElementById('statDays'),
+        statHours: document.getElementById('statHours'),
+        statIncome: document.getElementById('statIncome'),
+        btnQuickClockIn: document.getElementById('btnQuickClockIn'),
+        inputHours: document.getElementById('inputHours'),
+        btnManualClockIn: document.getElementById('btnManualClockIn'),
+        historyContainer: document.getElementById('historyContainer'),
+        calendarModalBtn: document.getElementById('calendarModalBtn'),
+        calendarModal: document.getElementById('calendarModal'),
+        calMonthTitle: document.getElementById('calMonthTitle'),
+        calPrevMonth: document.getElementById('calPrevMonth'),
+        calNextMonth: document.getElementById('calNextMonth'),
+        calendarGrid: document.getElementById('calendarGrid'),
+        btnCloseCalendar: document.getElementById('btnCloseCalendar'),
+        btnClearData: document.getElementById('btnClearData'),
+        toast: document.getElementById('toast'),
+        toastMsg: document.getElementById('toastMsg'),
+        // Edit Income Modal
+        editIncomeModal: document.getElementById('editIncomeModal'),
+        editDateTitle: document.getElementById('editDateTitle'),
+        editDateSubTitle: document.getElementById('editDateSubTitle'),
+        editIncomeInput: document.getElementById('editIncomeInput'),
+        btnCancelEdit: document.getElementById('btnCancelEdit'),
+        btnSaveEdit: document.getElementById('btnSaveEdit')
+    };
+
+    // --- Initialization ---
+
+    function init() {
+        // Set initial date picker value
+        els.datePicker.value = formatDate(currentDate);
+        
+        // Load Data
+        loadData();
+        
+        // Render
+        updateStats();
+        renderHistory();
+        
+        // Event Listeners
+        setupEventListeners();
+    }
+
+    // --- Data Management ---
+
+    function getStorageKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        return 'pig_diary_' + y + '-' + m;
+    }
+
+    function getDayKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+    }
+
+    function loadData() {
+        const key = getStorageKey(currentDate);
+        const raw = localStorage.getItem(key);
+        monthlyData = raw ? JSON.parse(raw) : {};
+    }
+
+    function saveData() {
+        const key = getStorageKey(currentDate);
+        localStorage.setItem(key, JSON.stringify(monthlyData));
+        updateStats();
+        renderHistory();
+        renderCalendar(); // If calendar is open
+    }
+
+    function clearData() {
+        if(confirm('确定要清除本月所有打卡记录吗？此操作不可恢复。')) {
+            const key = getStorageKey(currentDate);
+            localStorage.removeItem(key);
+            monthlyData = {};
+            updateStats();
+            renderHistory();
+            renderCalendar();
+            showToast('数据已清除 🗑️');
+            closeModal();
+        }
+    }
+
+    // --- Core Logic ---
+
+    function clockIn(hours, type) {
+        if (type === undefined) { type = 'work'; }
+        const dayKey = getDayKey(currentDate);
+        const income = Math.round(hours * HOURLY_RATE);
+
+        monthlyData[dayKey] = {
+            hours: parseFloat(hours),
+            income: income,
+            type: type,
+            timestamp: new Date().getTime()
+        };
+
+        saveData();
+        showToast('打卡成功！收入 +¥' + income);
+    }
+
+    function toggleRestStatus(dateStr) {
+        // Logic: 
+        // If empty -> set Rest
+        // If Work -> Open edit modal
+        // If Rest -> set Empty (cancel rest)
+        
+        if (!monthlyData[dateStr]) {
+            monthlyData[dateStr] = { hours: 0, income: 0, type: 'rest', timestamp: new Date().getTime() };
+        } else if (monthlyData[dateStr].type === 'rest') {
+            delete monthlyData[dateStr]; // Remove rest
+        } else {
+            // Was work, open edit modal
+            openEditModal(dateStr);
+            return; // Don't save yet
+        }
+        saveData();
+    }
+
+    function editIncome(dateStr, newIncome) {
+        if (!monthlyData[dateStr]) {
+            return;
+        }
+        
+        const record = monthlyData[dateStr];
+        const hours = record.hours || 8;
+        
+        monthlyData[dateStr] = {
+            hours: hours,
+            income: parseInt(newIncome),
+            type: 'work',
+            timestamp: new Date().getTime()
+        };
+        
+        saveData();
+    }
+
+    // --- UI Updates ---
+
+    function updateStats() {
+        var totalDays = 0;
+        var totalHours = 0;
+        var totalIncome = 0;
+
+        Object.keys(monthlyData).forEach(function(key) {
+            var record = monthlyData[key];
+            if (record.type === 'work') {
+                totalDays++;
+                totalHours += record.hours;
+                totalIncome += record.income;
+            }
+        });
+
+        // Animate numbers (simple text replacement for now)
+        els.statDays.textContent = totalDays;
+        els.statHours.textContent = totalHours;
+        els.statIncome.textContent = '¥' + totalIncome;
+    }
+
+    function renderHistory() {
+        els.historyContainer.innerHTML = '';
+        
+        // Sort keys descending
+        var sortedKeys = Object.keys(monthlyData).sort().reverse();
+        
+        if (sortedKeys.length === 0) {
+            els.historyContainer.innerHTML = '<div class="text-center text-muted text-sm py-4">暂无打卡记录，快去努力吧！💪</div>';
+            return;
+        }
+
+        sortedKeys.forEach(function(key) {
+            var record = monthlyData[key];
+            var isWork = record.type === 'work';
+            
+            var item = document.createElement('div');
+            item.className = 'history-item';
+            
+            var dateDisplay = key.substring(5); // Remove YYYY-
+            
+            item.innerHTML = '' +
+                '<div class="flex items-center gap-2">' +
+                    '<span class="font-bold">' + dateDisplay + '</span>' +
+                    '<span class="tag ' + (isWork ? 'tag-work' : 'tag-rest') + '">' + (isWork ? '上班' : '休息') + '</span>' +
+                '</div>' +
+                '<div class="font-bold ' + (isWork ? 'text-primary' : 'text-muted') + '">' +
+                    (isWork ? '+¥' + record.income : '休息日') +
+                '</div>';
+            els.historyContainer.appendChild(item);
+        });
+    }
+
+    function renderCalendar() {
+        els.calendarGrid.innerHTML = '';
+        
+        var year = calendarViewDate.getFullYear();
+        var month = calendarViewDate.getMonth(); // 0-11
+        
+        els.calMonthTitle.textContent = year + '年 ' + (month + 1) + '月';
+
+        // First day of month
+        var firstDay = new Date(year, month, 1);
+        var startDayOfWeek = firstDay.getDay(); // 0 (Sun) - 6 (Sat)
+        
+        // Days in month
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Empty slots
+        for (var i = 0; i < startDayOfWeek; i++) {
+            var empty = document.createElement('div');
+            empty.className = 'calendar-day empty';
+            els.calendarGrid.appendChild(empty);
+        }
+
+        // Days
+        for (var d = 1; d <= daysInMonth; d++) {
+            var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+            var record = monthlyData[dateStr];
+            var isToday = dateStr === getDayKey(new Date()); // Compare with actual today or selected? Usually actual today.
+
+            var dayEl = document.createElement('div');
+            dayEl.className = 'calendar-day';
+            
+            if (isToday) dayEl.classList.add('today');
+            
+            if (record) {
+                if (record.type === 'work') {
+                    dayEl.classList.add('status-work');
+                    dayEl.innerHTML = '<span>' + d + '</span><span class="day-income">¥' + record.income + '</span>';
+                } else if (record.type === 'rest') {
+                    dayEl.classList.add('status-rest');
+                    dayEl.innerHTML = '<span>' + d + '</span><span class="day-income">休息</span>';
+                }
+            } else {
+                dayEl.innerHTML = '<span>' + d + '</span>';
+            }
+
+            // Click interaction
+            dayEl.onclick = function(ds) {
+                return function() {
+                    toggleRestStatus(ds);
+                };
+            }(dateStr);
+
+            els.calendarGrid.appendChild(dayEl);
+        }
+    }
+
+    // --- Edit Income Modal Functions ---
+
+    function openEditModal(dateStr) {
+        editingDate = dateStr;
+        var record = monthlyData[dateStr];
+        
+        var dateObj = new Date(dateStr);
+        var month = dateObj.getMonth() + 1;
+        var day = dateObj.getDate();
+        
+        els.editDateTitle.textContent = '编辑收入';
+        els.editDateSubTitle.textContent = month + '月' + day + '日';
+        els.editIncomeInput.value = record ? record.income : 0;
+        
+        els.editIncomeModal.classList.add('active');
+        els.editIncomeInput.focus();
+    }
+
+    function closeEditModal() {
+        els.editIncomeModal.classList.remove('active');
+        editingDate = null;
+    }
+
+    function saveEditIncome() {
+        if (!editingDate) {
+            return;
+        }
+        
+        var newIncome = parseInt(els.editIncomeInput.value);
+        if (isNaN(newIncome) || newIncome < 0) {
+            showToast('请输入有效金额 ⚠️');
+            return;
+        }
+        
+        editIncome(editingDate, newIncome);
+        closeEditModal();
+        showToast('金额已更新 ❤️');
+    }
+
+    // --- Effects ---
+
+    function createHeart(x, y) {
+        var heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.textContent = '❤️';
+        heart.style.left = x + 'px';
+        heart.style.top = y + 'px';
+        document.body.appendChild(heart);
+        
+        setTimeout(function() {
+            heart.remove();
+        }, 800);
+    }
+
+    function showToast(msg) {
+        els.toastMsg.textContent = msg;
+        els.toast.classList.add('show');
+        setTimeout(function() {
+            els.toast.classList.remove('show');
+        }, 2000);
+    }
+
+    function openModal() {
+        els.calendarModal.classList.add('active');
+        renderCalendar();
+    }
+
+    function closeModal() {
+        els.calendarModal.classList.remove('active');
+    }
+
+    function formatDate(date) {
+        var y = date.getFullYear();
+        var m = String(date.getMonth() + 1).padStart(2, '0');
+        var d = String(date.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+    }
+
+    // --- Event Listeners ---
+
+    function setupEventListeners() {
+        // Date Picker Change
+        els.datePicker.addEventListener('change', function(e) {
+            currentDate = new Date(e.target.value);
+            // Check if month changed, if so, reload data
+            loadData();
+            updateStats();
+            renderHistory();
+        });
+
+        // Header Month Navigation (Changes View & Data Context)
+        var changeMonth = function(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            els.datePicker.value = formatDate(currentDate);
+            loadData();
+            updateStats();
+            renderHistory();
+        };
+
+        els.prevMonthBtn.addEventListener('click', function() { changeMonth(-1); });
+        els.nextMonthBtn.addEventListener('click', function() { changeMonth(1); });
+
+        // Quick Clock In
+        els.btnQuickClockIn.addEventListener('click', function(e) {
+            clockIn(8, 'work');
+            createHeart(e.clientX, e.clientY);
+        });
+
+        // Manual Clock In
+        els.btnManualClockIn.addEventListener('click', function(e) {
+            var val = parseFloat(els.inputHours.value);
+            if (isNaN(val) || val <= 0) {
+                showToast('请输入有效的小时数 ⚠️');
+                return;
+            }
+            clockIn(val, 'work');
+            els.inputHours.value = '';
+            createHeart(e.clientX, e.clientY);
+        });
+
+        // Calendar Modal
+        els.calendarModalBtn.addEventListener('click', openModal);
+        els.btnCloseCalendar.addEventListener('click', closeModal);
+        els.calendarModal.addEventListener('click', function(e) {
+            if (e.target === els.calendarModal) closeModal();
+        });
+
+        // Calendar Month Navigation (Only changes View, not Data Context)
+        els.calPrevMonth.addEventListener('click', function() {
+            calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
+            renderCalendar();
+        });
+        els.calNextMonth.addEventListener('click', function() {
+            calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        // Clear Data
+        els.btnClearData.addEventListener('click', clearData);
+
+        // Edit Income Modal Events
+        els.btnCancelEdit.addEventListener('click', closeEditModal);
+        els.btnSaveEdit.addEventListener('click', saveEditIncome);
+        els.editIncomeModal.addEventListener('click', function(e) {
+            if (e.target === els.editIncomeModal) closeEditModal();
+        });
+        
+        // Enter key to save
+        els.editIncomeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                saveEditIncome();
+            }
+        });
+    }
+
+    // Start App
+    init();
+
+</script>
+
+</body>
+</html>
