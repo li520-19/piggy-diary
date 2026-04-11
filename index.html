@@ -74,6 +74,7 @@
         .text-2xl { font-size: 2rem; }
         .text-primary { color: var(--primary); }
         .text-muted { color: var(--gray-400); }
+        .text-center { text-align: center; }
 
         /* Layout Utilities */
         .flex { display: flex; }
@@ -523,7 +524,7 @@
             </div>
         </div>
         <div class="text-center text-xs text-muted font-medium">
-            "打工人的治愈日记，每一分努力都算数 ✨"
+            "努力猪猪 幸运猪猪 快乐猪猪 猪猪公主爱老公"
         </div>
     </section>
 
@@ -536,7 +537,7 @@
 
         <div class="manual-input-card">
             <div class="input-group">
-                <label class="input-label">填写上班小时数</label>
+                <label class="input-label">填写牛马小时数</label>
                 <div class="flex gap-2">
                     <input type="number" id="inputHours" placeholder="例如：4.5" step="0.5" min="0">
                     <button class="btn btn-secondary" id="btnManualClockIn">确认</button>
@@ -615,7 +616,7 @@
      * Application Logic
      */
     const HOURLY_RATE = 130 / 8; // 16.25 RMB per hour
-    const DEFAULT_DATE = new Date('2026-04-06T00:00:00');
+    const DEFAULT_DATE = new Date(); // Use system current time
     
     // State
     let currentDate = new Date(DEFAULT_DATE); // Currently selected date for input
