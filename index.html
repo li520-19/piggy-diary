@@ -194,27 +194,11 @@
         }
 
         .slogan {
-            text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             font-weight: 800;
             color: var(--text-color);
             position: relative;
-            display: inline-block;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .slogan::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 8px;
-            background: var(--secondary);
-            opacity: 0.4;
-            z-index: -1;
-            border-radius: 4px;
+            justify-content: center;
         }
 
         /* Stats Panel */
@@ -272,11 +256,18 @@
         }
 
         /* History List */
-        .history-list {
-            flex: 1;
-            padding: 0 16px 80px; /* Padding for footer */
-            overflow-y: auto;
-        }
+    .history-list {
+        flex: 1;
+        padding: 0 16px 80px; /* Padding for footer */
+        overflow-y: auto;
+        max-height: 400px; /* Set maximum height for scrolling */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    .history-list::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
 
         .history-item {
             display: flex;
@@ -434,6 +425,34 @@
             to { opacity: 1; }
         }
 
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .ripple-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .ripple-effect.active {
+            animation: ripple 0.6s ease-out;
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -488,7 +507,10 @@
 <div id="app">
     <!-- Header -->
     <header>
-        <div class="slogan text-lg">今天也要元气满满地搬砖哦！🐷</div>
+        <div class="slogan flex items-center gap-3">
+            <img src="-3ocj9hyofyw2yhh2-crop.gif" alt="小猪动画" style="max-width: 50px; height: auto;">
+            <span id="sloganText" class="text-lg font-bold">猪猪今天也要加油</span>
+        </div>
         
         <div class="date-picker-container card p-2" style="border-radius: var(--radius-full);">
             <button class="btn btn-ghost btn-icon" id="prevMonthBtn" aria-label="上个月">
@@ -556,7 +578,7 @@
 
     <!-- Footer -->
     <footer>
-        <div class="footer-text">❤️</div>
+        <button class="btn btn-secondary" id="themeToggleBtn" style="font-size: 0.9rem; padding: 12px 40px; background: var(--primary); color: white; border: 2px solid var(--border-color); box-shadow: var(--shadow-hard); transition: all 0.5s ease; font-weight: bold;">主题</button>
     </footer>
 </div>
 
@@ -618,11 +640,55 @@
     const HOURLY_RATE = 130 / 8; // 16.25 RMB per hour
     const DEFAULT_DATE = new Date(); // Use system current time
     
+    // Themes
+    const themes = {
+        default: {
+            bgColor: '#FFFDF5',
+            textColor: '#1E293B',
+            primary: '#F472B6', // Pink
+            primaryHover: '#EC4899',
+            accent: '#8B5CF6', // Purple
+            secondary: '#FBBF24', // Yellow
+            tertiary: '#34D399', // Green
+            borderColor: '#1E293B',
+            white: '#FFFFFF',
+            gray100: '#F1F5F9',
+            gray400: '#94A3B8'
+        },
+        love: {
+            bgColor: '#F1EFE3',
+            textColor: '#000000',
+            primary: '#EB2129', // Red
+            primaryHover: '#C61720',
+            accent: '#F1EFE3', // Off-white
+            secondary: '#000000', // Black
+            tertiary: '#EB2129', // Red
+            borderColor: '#000000',
+            white: '#FFFFFF',
+            gray100: '#F1EFE3',
+            gray400: '#666666'
+        },
+        calm: {
+            bgColor: '#D4D5CF',
+            textColor: '#333333',
+            primary: '#5CABBc', // Blue-green
+            primaryHover: '#4A9AB0',
+            accent: '#FBFE8D', // Yellow
+            secondary: '#D4D5CF', // Light gray
+            tertiary: '#5CABBc', // Blue-green
+            borderColor: '#333333',
+            white: '#FFFFFF',
+            gray100: '#E8E9E4',
+            gray400: '#999999'
+        }
+    };
+    
     // State
     let currentDate = new Date(DEFAULT_DATE); // Currently selected date for input
     let calendarViewDate = new Date(DEFAULT_DATE); // Currently viewed month in calendar
     let monthlyData = {}; // { "YYYY-MM-DD": { hours: 8, income: 130, type: 'work'|'rest' } }
     let editingDate = null; // Date being edited in edit modal
+    let currentTheme = 'default'; // Current theme name
 
     // DOM Elements
     const els = {
@@ -652,14 +718,94 @@
         editDateSubTitle: document.getElementById('editDateSubTitle'),
         editIncomeInput: document.getElementById('editIncomeInput'),
         btnCancelEdit: document.getElementById('btnCancelEdit'),
-        btnSaveEdit: document.getElementById('btnSaveEdit')
+        btnSaveEdit: document.getElementById('btnSaveEdit'),
+        // Theme
+        themeToggleBtn: document.getElementById('themeToggleBtn'),
+        // Slogan
+        sloganText: document.getElementById('sloganText')
     };
+
+    // --- Theme Functions ---
+
+    function applyTheme(themeName) {
+        const theme = themes[themeName];
+        if (!theme) return;
+        
+        const root = document.documentElement;
+        root.style.setProperty('--bg-color', theme.bgColor);
+        root.style.setProperty('--text-color', theme.textColor);
+        root.style.setProperty('--primary', theme.primary);
+        root.style.setProperty('--primary-hover', theme.primaryHover);
+        root.style.setProperty('--accent', theme.accent);
+        root.style.setProperty('--secondary', theme.secondary);
+        root.style.setProperty('--tertiary', theme.tertiary);
+        root.style.setProperty('--border-color', theme.borderColor);
+        root.style.setProperty('--white', theme.white);
+        root.style.setProperty('--gray-100', theme.gray100);
+        root.style.setProperty('--gray-400', theme.gray400);
+        
+        // Update slogan text based on theme
+        const slogans = {
+            default: '猪猪今天也要加油',
+            love: '猪猪宝贝，快乐加倍',
+            calm: '猪猪今天的心，又是长大了一天'
+        };
+        if (els.sloganText) {
+            els.sloganText.textContent = slogans[themeName] || slogans.default;
+        }
+        
+        currentTheme = themeName;
+        localStorage.setItem('pig_diary_theme', themeName);
+    }
+
+    function cycleTheme() {
+        // Create ripple effect
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple-effect';
+        document.body.appendChild(ripple);
+        
+        // Trigger ripple animation
+        setTimeout(() => {
+            ripple.classList.add('active');
+        }, 10);
+        
+        // Change theme after a short delay to sync with animation
+        setTimeout(() => {
+            const themeNames = Object.keys(themes);
+            const currentIndex = themeNames.indexOf(currentTheme);
+            const nextIndex = (currentIndex + 1) % themeNames.length;
+            applyTheme(themeNames[nextIndex]);
+            showToast('已切换到' + getThemeDisplayName(themeNames[nextIndex]) + '主题');
+        }, 200);
+        
+        // Remove ripple element after animation
+        setTimeout(() => {
+            ripple.remove();
+        }, 700);
+    }
+
+    function getThemeDisplayName(themeName) {
+        const names = {
+            default: '默认',
+            love: '情感心动',
+            calm: '心境'
+        };
+        return names[themeName] || themeName;
+    }
 
     // --- Initialization ---
 
     function init() {
         // Set initial date picker value
         els.datePicker.value = formatDate(currentDate);
+        
+        // Load Theme
+        const savedTheme = localStorage.getItem('pig_diary_theme');
+        if (savedTheme && themes[savedTheme]) {
+            applyTheme(savedTheme);
+        } else {
+            applyTheme('default');
+        }
         
         // Load Data
         loadData();
@@ -725,6 +871,7 @@
             hours: parseFloat(hours),
             income: income,
             type: type,
+            note: '',
             timestamp: new Date().getTime()
         };
 
@@ -739,7 +886,7 @@
         // If Rest -> set Empty (cancel rest)
         
         if (!monthlyData[dateStr]) {
-            monthlyData[dateStr] = { hours: 0, income: 0, type: 'rest', timestamp: new Date().getTime() };
+            monthlyData[dateStr] = { hours: 0, income: 0, type: 'rest', note: '', timestamp: new Date().getTime() };
         } else if (monthlyData[dateStr].type === 'rest') {
             delete monthlyData[dateStr]; // Remove rest
         } else {
@@ -757,11 +904,29 @@
         
         const record = monthlyData[dateStr];
         const hours = record.hours || 8;
+        const note = record.note || '';
         
         monthlyData[dateStr] = {
             hours: hours,
             income: parseInt(newIncome),
             type: 'work',
+            note: note,
+            timestamp: new Date().getTime()
+        };
+        
+        saveData();
+    }
+
+    function saveNote(dateStr, note) {
+        if (!monthlyData[dateStr]) {
+            return;
+        }
+        
+        const record = monthlyData[dateStr];
+        
+        monthlyData[dateStr] = {
+            ...record,
+            note: note,
             timestamp: new Date().getTime()
         };
         
@@ -811,13 +976,48 @@
             var dateDisplay = key.substring(5); // Remove YYYY-
             
             item.innerHTML = '' +
-                '<div class="flex items-center gap-2">' +
-                    '<span class="font-bold">' + dateDisplay + '</span>' +
-                    '<span class="tag ' + (isWork ? 'tag-work' : 'tag-rest') + '">' + (isWork ? '上班' : '休息') + '</span>' +
+                '<div class="flex-1">' +
+                    '<div class="flex items-center gap-2 flex-wrap">' +
+                        '<span class="font-bold text-lg">' + dateDisplay + '</span>' +
+                        '<span class="tag ' + (isWork ? 'tag-work' : 'tag-rest') + ' text-sm">' + (isWork ? '上班' : '休息') + '</span>' +
+                        '<input type="text" class="note-input" placeholder="备注哦❤" value="' + (record.note || '') + '" data-date="' + key + '" style="flex: 1; min-width: 150px; padding: 4px 8px; border: none; border-radius: var(--radius-sm); font-size: 0.8rem; background: transparent; color: var(--text-color); margin-left: 8px; outline: none; opacity: ' + (record.note ? '1' : '0.5') + ';">' +
+                    '</div>' +
                 '</div>' +
-                '<div class="font-bold ' + (isWork ? 'text-primary' : 'text-muted') + '">' +
+                '<div class="font-bold ' + (isWork ? 'text-primary' : 'text-muted') + ' flex items-center">' +
                     (isWork ? '+¥' + record.income : '休息日') +
                 '</div>';
+            
+            // Add focus style for note input
+            const noteInput = item.querySelector('.note-input');
+            noteInput.addEventListener('focus', function() {
+                this.style.background = 'var(--gray-100)';
+                this.style.border = '1px solid var(--gray-400)';
+                this.style.opacity = '1';
+            });
+            
+            noteInput.addEventListener('blur', function() {
+                this.style.background = 'transparent';
+                this.style.border = 'none';
+                this.style.opacity = this.value ? '1' : '0.5';
+                saveNote(this.dataset.date, this.value);
+            });
+            
+            noteInput.addEventListener('input', function() {
+                this.style.opacity = '1';
+            });
+            
+            noteInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    this.blur();
+                }
+            });
+            
+            // Make the entire row clickable to focus the note input
+            item.addEventListener('click', function(e) {
+                if (!e.target.closest('.note-input') && !e.target.closest('.tag')) {
+                    noteInput.focus();
+                }
+            });
             els.historyContainer.appendChild(item);
         });
     }
@@ -1031,6 +1231,9 @@
                 saveEditIncome();
             }
         });
+        
+        // Theme toggle
+        els.themeToggleBtn.addEventListener('click', cycleTheme);
     }
 
     // Start App
